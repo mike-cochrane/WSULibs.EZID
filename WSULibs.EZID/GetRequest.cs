@@ -8,23 +8,26 @@ namespace WSULibs.EZID
 	{
 		public const string PATH = "/ezid/id/";
 
+		public string Identifier { get; set; }
+
 		/// <summary>
 		/// Create an instance of an EZID GetRequest object
 		/// </summary>
 		/// <param name="identifier">EZID Identifier (ie: ark:/99999/fk4cz3dh0)</param>
-		public GetRequest(string identifier)
-			: base(GetRequest.PATH + identifier, RequestMethod.GET)
+		public GetRequest(string identifier = null)
 		{
-			if (String.IsNullOrWhiteSpace(identifier))
-				throw new ArgumentNullException("identifier");
+			this.Identifier = identifier;
 		}
 
 		public IDictionary<string, string> ExecuteRequest()
 		{
+			if (string.IsNullOrWhiteSpace(this.Identifier))
+				throw new InvalidOperationException("Identifier cannot of empty or null");
+
 			Response response = null;
 			try
 			{
-				response = new Response(this.ExecuteRequest(null));
+				response = new Response(Request.ExecuteRequest(GetRequest.PATH + this.Identifier, RequestMethod.GET));
 			}
 			catch (WebException e)
 			{

@@ -9,9 +9,11 @@ namespace WSULibs.EZID
 	{
 		public const string PATH = "/ezid/id/";
 
+		public string Identifier { get; set; }
+
 		public ModifyRequest(string identifier)
-			: base(ModifyRequest.PATH + identifier, RequestMethod.POST)
 		{
+			this.Identifier = identifier;
 			throw new NotImplementedException();
 		}
 	}

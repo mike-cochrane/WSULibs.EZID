@@ -53,6 +53,7 @@
     <Compile Include="ModifyRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Request.cs" />
+    <Compile Include="RequestMethod.cs" />
     <Compile Include="Response.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>

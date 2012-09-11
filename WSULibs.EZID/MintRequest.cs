@@ -13,28 +13,34 @@ namespace WSULibs.EZID
 
 		public Metadata Metadata { get; set; }
 
-		public MintRequest(string shoulder, Metadata metadata, ApiAuthentication authentication)
-			: base(MintRequest.PATH + shoulder, RequestMethod.POST, authentication)
+		public MintRequest(string shoulder, Metadata metadata, ApiAuthentication authentication = null)
 		{
 			this.Shoulder = shoulder;
 			this.Metadata = metadata;
+
+			if (authentication != null)
+				this.Authentication = authentication;
 		}
 
 		public string ExecuteRequest()
 		{
 			if (this.Shoulder == null)
-				throw new NullReferenceException("Shoulder must not be null");
+				throw new InvalidOperationException("Shoulder must not be null");
 
 			if (this.Metadata == null)
-				throw new NullReferenceException("Metadata must not be null");
+				throw new InvalidOperationException("Metadata must not be null");
+
+			if (this.Authentication == null)
+				throw new InvalidOperationException("Authentication must not be null");
 
 			if (String.IsNullOrWhiteSpace(this.Metadata.Target))
-				throw new NullReferenceException("Metadata.Target must not be null");
+				throw new InvalidOperationException("Metadata.Target must not be null");
 
 			Response response = null;
 			try
 			{
-				response = new Response(this.ExecuteRequest(this.Metadata.AsDictionary()));
+				var httpResponse = Request.ExecuteRequest(this.Shoulder, RequestMethod.POST, authentication: this.Authentication, map: this.Metadata.AsDictionary());
+				response = new Response(httpResponse);
 			}
 			catch (Exception e)
 			{
