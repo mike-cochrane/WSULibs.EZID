@@ -13,7 +13,7 @@ namespace WSULibs.EZID
 
 		public Metadata Metadata { get; set; }
 
-		public MintRequest(string shoulder, Metadata metadata, Authentication authentication)
+		public MintRequest(string shoulder, Metadata metadata, ApiAuthentication authentication)
 			: base(MintRequest.PATH + shoulder, RequestMethod.POST, authentication)
 		{
 			this.Shoulder = shoulder;

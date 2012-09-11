@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Net;
 
 namespace WSULibs.EZID
 {
@@ -9,6 +8,10 @@ namespace WSULibs.EZID
 	{
 		public const string PATH = "/ezid/id/";
 
+		/// <summary>
+		/// Create an instance of an EZID GetRequest object
+		/// </summary>
+		/// <param name="identifier">EZID Identifier (ie: ark:/99999/fk4cz3dh0)</param>
 		public GetRequest(string identifier)
 			: base(GetRequest.PATH + identifier, RequestMethod.GET)
 		{
@@ -23,7 +26,7 @@ namespace WSULibs.EZID
 			{
 				response = new Response(this.ExecuteRequest(null));
 			}
-			catch (Exception e)
+			catch (WebException e)
 			{
 				throw new EZIDException(e.Message, e);
 			}

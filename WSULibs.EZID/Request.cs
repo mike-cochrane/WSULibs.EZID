@@ -22,12 +22,12 @@ namespace WSULibs.EZID
 			}
 		}
 
-		public Authentication Authentication { get; set; }
+		public ApiAuthentication Authentication { get; set; }
 
 		protected Request(string requestPath, RequestMethod requestMethod)
 		{
 			if (String.IsNullOrWhiteSpace(requestPath))
-				throw new ArgumentException("identifier");
+				throw new ArgumentException("requestPath");
 
 			if (requestMethod == null)
 				throw new ArgumentException("requestMethod");
@@ -36,21 +36,29 @@ namespace WSULibs.EZID
 			this.RequestMethod = requestMethod;
 		}
 
-		protected Request(string requestPath, RequestMethod requestMethod, Authentication authentication)
+		protected Request(string requestPath, RequestMethod requestMethod, ApiAuthentication authentication)
 			: this(requestPath, requestMethod)
 		{
 			this.Authentication = authentication;
 		}
 
+		/// <summary>
+		/// Execute the request and get the raw HTTP response from the server
+		/// </summary>
+		/// <param name="map">Dictionary of key/value metadata pairs</param>
+		/// <returns>Raw HTTP response returned from service</returns>
 		protected HttpWebResponse ExecuteRequest(IDictionary<string, string> map)
 		{
 			var request = HttpWebRequest.Create(this.RequestUri) as HttpWebRequest;
+			request.ProtocolVersion = HttpVersion.Version11;
 			request.Method = this.RequestMethod.ToString();
 			request.ContentType = "text/plain; charset=UTF-8";
 
 			// set authentication headers
 			if (this.Authentication != null)
-				request.Headers[HttpRequestHeader.Authorization] = String.Format("Basic {0}", this.Authentication.EncodeBase64());
+			{
+				request.Headers[HttpRequestHeader.Authorization] = this.Authentication.ToString();
+			}
 
 			// add metadata to request body if passed
 			if (map != null)
@@ -58,7 +66,8 @@ namespace WSULibs.EZID
 				var b = new StringBuilder();
 				foreach (var pair in map)
 				{
-					if (pair.Key == Metadata.MetadataKeys.Target)
+					// target shouldn't be encoded
+					if (Metadata.MetadataKeys.Target == pair.Key)
 					{
 						b.Append(pair.Key + ": " + Uri.UnescapeDataString(pair.Value) + "\n");
 					}
@@ -77,7 +86,22 @@ namespace WSULibs.EZID
 				}
 			}
 
-			return request.GetResponse() as HttpWebResponse;
+			HttpWebResponse response = null;
+			// HttpWebRequest.GetResponse throws WebException for all protocol level errors
+			// (ie 401)
+			try
+			{
+				response = request.GetResponse() as HttpWebResponse;
+			}
+			catch (WebException e)
+			{
+				if (WebExceptionStatus.ProtocolError != e.Status)
+					throw e;
+
+				response = e.Response as HttpWebResponse;
+			}
+
+			return response;
 		}
 	}
 

@@ -62,13 +62,13 @@ namespace WSULibs.EZID.Bin
 
 		public string CsvFilePath { get; set; }
 
-		public Authentication Authentication { get; set; }
+		public ApiAuthentication Authentication { get; set; }
 
 		public int Limit { get; set; }
 
 		public string ResultFile { get; set; }
 
-		public MintCSVFile(string shoulder = null, string csvFilePath = null, string resultFile = null, Authentication authentication = null, int limit = LimitAll)
+		public MintCSVFile(string shoulder = null, string csvFilePath = null, string resultFile = null, ApiAuthentication authentication = null, int limit = LimitAll)
 		{
 			this.Shoulder = shoulder;
 			this.CsvFilePath = csvFilePath;
