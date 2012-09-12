@@ -5,6 +5,9 @@ using System.Text;
 
 namespace WSULibs.EZID
 {
+	/// <summary>
+	/// Represents metadata values common to all metadata types
+	/// </summary>
 	public class Metadata
 	{
 		public static string DetermineType(IDictionary<string, string> map)
@@ -31,42 +34,50 @@ namespace WSULibs.EZID
 
 		public string Status { get; set; }
 
-		public Metadata()
+		/// <summary>
+		/// Initilize base metadata object
+		/// </summary>
+		/// <param name="map">Dictionary of key/value metadata pairs</param>
+		public Metadata(IDictionary<string, string> map = null)
 		{
+			if (null != map)
+			{
+				// parse dictionary into metadata object
+				if (map.ContainsKey(MetadataKeys.Owner))
+					this.Owner = map[MetadataKeys.Owner];
+
+				if (map.ContainsKey(MetadataKeys.CoOwners))
+					this.OwnerGroup = map[MetadataKeys.OwnerGroup];
+
+				if (map.ContainsKey(MetadataKeys.CoOwners))
+					this.CoOwners = map[MetadataKeys.CoOwners].Split(';').ToList();
+
+				if (map.ContainsKey(MetadataKeys.Created))
+				{
+					long created;
+					if (long.TryParse(map[MetadataKeys.Created], out created))
+						this.Created = created;
+				}
+
+				if (map.ContainsKey(MetadataKeys.Updated))
+				{
+					long updated;
+					if (long.TryParse(map[MetadataKeys.Updated], out updated))
+						this.Updated = updated;
+				}
+
+				if (map.ContainsKey(MetadataKeys.Target))
+					this.Target = map[MetadataKeys.Target];
+
+				if (map.ContainsKey(MetadataKeys.Status))
+					this.Status = map[MetadataKeys.Status];
+			}
 		}
 
-		public Metadata(IDictionary<string, string> map)
-		{
-			if (map.ContainsKey(MetadataKeys.Owner))
-				this.Owner = map[MetadataKeys.Owner];
-
-			if (map.ContainsKey(MetadataKeys.CoOwners))
-				this.OwnerGroup = map[MetadataKeys.OwnerGroup];
-
-			if (map.ContainsKey(MetadataKeys.CoOwners))
-				this.CoOwners = map[MetadataKeys.CoOwners].Split(';').ToList();
-
-			if (map.ContainsKey(MetadataKeys.Created))
-			{
-				long created;
-				if (long.TryParse(map[MetadataKeys.Created], out created))
-					this.Created = created;
-			}
-
-			if (map.ContainsKey(MetadataKeys.Updated))
-			{
-				long updated;
-				if (long.TryParse(map[MetadataKeys.Updated], out updated))
-					this.Updated = updated;
-			}
-
-			if (map.ContainsKey(MetadataKeys.Target))
-				this.Target = map[MetadataKeys.Target];
-
-			if (map.ContainsKey(MetadataKeys.Status))
-				this.Status = map[MetadataKeys.Status];
-		}
-
+		/// <summary>
+		/// Convert metadata object to a dictionary
+		/// </summary>
+		/// <returns>A dictionary of key/value metadata pairs</returns>
 		public virtual IDictionary<string, string> AsDictionary()
 		{
 			var map = new Dictionary<string, string>();
@@ -86,6 +97,9 @@ namespace WSULibs.EZID
 			return map;
 		}
 
+		/// <summary>
+		/// Collection of EZID internal metadata keys
+		/// </summary>
 		public static class MetadataKeys
 		{
 			public const string Owner = "_owner";
@@ -100,6 +114,9 @@ namespace WSULibs.EZID
 			public const string Status = "_status";
 		}
 
+		/// <summary>
+		/// Collection of EZID metadata types
+		/// </summary>
 		public static class MetadataTypes
 		{
 			public const string Basic = "basic";

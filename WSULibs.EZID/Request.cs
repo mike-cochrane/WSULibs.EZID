@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Text;
 
@@ -48,6 +47,7 @@ namespace WSULibs.EZID
 				var body = UTF8Encoding.UTF8.GetBytes(b.ToString());
 				request.ContentLength = body.Length;
 
+				// write request body to request stream
 				using (var stream = request.GetRequestStream())
 				{
 					stream.Write(body, 0, body.Length);
@@ -55,14 +55,15 @@ namespace WSULibs.EZID
 			}
 
 			HttpWebResponse response = null;
-			// HttpWebRequest.GetResponse throws WebException for all protocol level errors
-			// (ie 401)
+			// HttpWebRequest.GetResponse throws WebException for protocol level errors (ie 401)
+			// We want to capture those and persist the rest
 			try
 			{
 				response = request.GetResponse() as HttpWebResponse;
 			}
 			catch (WebException e)
 			{
+				// only throw non protocol error exceptions
 				if (WebExceptionStatus.ProtocolError != e.Status)
 					throw e;
 

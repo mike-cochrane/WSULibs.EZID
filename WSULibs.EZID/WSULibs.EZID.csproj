@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="ApiAuthentication.cs" />
     <Compile Include="DeleteRequest.cs" />
+    <Compile Include="EZIDApiException.cs" />
     <Compile Include="EZIDException.cs" />
     <Compile Include="GetRequest.cs" />
     <Compile Include="Metadata.cs" />

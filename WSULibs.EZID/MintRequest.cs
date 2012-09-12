@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace WSULibs.EZID
 {
@@ -13,19 +10,28 @@ namespace WSULibs.EZID
 
 		public Metadata Metadata { get; set; }
 
-		public MintRequest(string shoulder, Metadata metadata, ApiAuthentication authentication = null)
+		public MintRequest(string shoulder = null, Metadata metadata = null, ApiAuthentication authentication = null)
 		{
-			this.Shoulder = shoulder;
-			this.Metadata = metadata;
+			if (null != shoulder)
+				this.Shoulder = shoulder;
 
-			if (authentication != null)
+			if (null != metadata)
+				this.Metadata = metadata;
+
+			if (null != authentication)
 				this.Authentication = authentication;
 		}
 
+		/// <summary>
+		/// Execute the mint request
+		/// </summary>
+		/// <returns>ARK identifier</returns>
+		/// <exception cref="System.Net.WebException">Thrown when there is a problem with the HTTP request</exception>
+		/// <exception cref="WSULibs.EZID.EZIDApiException">Thrown when the EZID API returns an API level error</exception>
 		public string ExecuteRequest()
 		{
-			if (this.Shoulder == null)
-				throw new InvalidOperationException("Shoulder must not be null");
+			if (string.IsNullOrWhiteSpace(this.Shoulder))
+				throw new InvalidOperationException("Shoulder cannot of empty or null");
 
 			if (this.Metadata == null)
 				throw new InvalidOperationException("Metadata must not be null");
@@ -34,22 +40,14 @@ namespace WSULibs.EZID
 				throw new InvalidOperationException("Authentication must not be null");
 
 			if (String.IsNullOrWhiteSpace(this.Metadata.Target))
-				throw new InvalidOperationException("Metadata.Target must not be null");
+				throw new InvalidOperationException("Metadata.Target must not be empty or null");
 
-			Response response = null;
-			try
-			{
-				var httpResponse = Request.ExecuteRequest(this.Shoulder, RequestMethod.POST, authentication: this.Authentication, map: this.Metadata.AsDictionary());
-				response = new Response(httpResponse);
-			}
-			catch (Exception e)
-			{
-				throw new EZIDException(e.Message, e);
-			}
+				var httpResponse = Request.ExecuteRequest(MintRequest.PATH + this.Shoulder, RequestMethod.POST, authentication: this.Authentication, map: this.Metadata.AsDictionary());
+				var response = new Response(httpResponse);
 
 			var map = response.Parse();
-			if (response.StatusCode != System.Net.HttpStatusCode.Created)
-				throw new EZIDException(map[Response.ResponseStatusKeys.Error]);
+			if (response.HasError)
+				throw new EZIDApiException(response.StatusCode, map[Response.ResponseStatusKeys.Error]);
 
 			return map[Response.ResponseStatusKeys.Success];
 		}

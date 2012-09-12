@@ -4,6 +4,9 @@ using System.Net;
 
 namespace WSULibs.EZID
 {
+	/// <summary>
+	/// Abstracts an EZID API get request
+	/// </summary>
 	public class GetRequest : Request
 	{
 		public const string PATH = "/ezid/id/";
@@ -19,24 +22,22 @@ namespace WSULibs.EZID
 			this.Identifier = identifier;
 		}
 
+		/// <summary>
+		/// Execute the requerst and 
+		/// </summary>
+		/// <returns>Dictionary of key/value paired metadata</returns>
+		/// <exception cref="System.Net.WebException">Thrown when there is a problem with the HTTP request</exception>
+		/// <exception cref="WSULibs.EZID.EZIDApiException">Thrown when the EZID API returns an API level error</exception>
 		public IDictionary<string, string> ExecuteRequest()
 		{
 			if (string.IsNullOrWhiteSpace(this.Identifier))
 				throw new InvalidOperationException("Identifier cannot of empty or null");
 
-			Response response = null;
-			try
-			{
-				response = new Response(Request.ExecuteRequest(GetRequest.PATH + this.Identifier, RequestMethod.GET));
-			}
-			catch (WebException e)
-			{
-				throw new EZIDException(e.Message, e);
-			}
+			var response = new Response(Request.ExecuteRequest(GetRequest.PATH + this.Identifier, RequestMethod.GET));
 
 			var map = response.Parse();
-			if (response.StatusCode != System.Net.HttpStatusCode.OK)
-				throw new EZIDException(map[Response.ResponseStatusKeys.Error]);
+			if (response.HasError)
+				throw new EZIDApiException(response.StatusCode, map[Response.ResponseStatusKeys.Error]);
 
 			return response.Parse();
 		}
