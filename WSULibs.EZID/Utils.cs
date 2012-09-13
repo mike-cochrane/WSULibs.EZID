@@ -11,8 +11,7 @@ namespace WSULibs.EZID
 		/// <summary>
 		/// Percent encode a string
 		/// </summary>
-		/// <see cref="http://n2t.net/ezid/doc/apidoc.html#request-response-bodies"/>
-		/// <remarks>This method was ported from the API docs referecned.</remarks>
+		/// <remarks>This method was ported from the API docs referecned. (http://n2t.net/ezid/doc/apidoc.html#request-response-bodies)</remarks>
 		/// <param name="s">String to encode</param>
 		/// <returns>Percent encoded string</returns>
 		public static string Escape(string s)
@@ -23,8 +22,7 @@ namespace WSULibs.EZID
 		/// <summary>
 		/// Unencode a percent encoded string
 		/// </summary>
-		/// <see cref="http://n2t.net/ezid/doc/apidoc.html#request-response-bodies"/>
-		/// <remarks>This method was ported from the API docs referecned.</remarks>
+		/// <remarks>This method was ported from the API docs referecned. (http://n2t.net/ezid/doc/apidoc.html#request-response-bodies)</remarks>
 		/// <param name="s">Precent encoded string</param>
 		/// <returns>Unencoded string</returns>
 		public static string Unescape(string s)

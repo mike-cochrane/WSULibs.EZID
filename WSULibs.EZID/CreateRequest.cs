@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace WSULibs.EZID
 {
-	public class ModifyRequest : Request
+	public class CreateRequest : Request
 	{
 		public const string PATH = "/ezid/id/";
 
@@ -10,7 +13,7 @@ namespace WSULibs.EZID
 
 		public Metadata Metadata { get; set; }
 
-		public ModifyRequest(string identifier = null, Metadata metadata = null, ApiAuthentication authentication = null)
+		public CreateRequest(string identifier = null, Metadata metadata = null, ApiAuthentication authentication = null)
 		{
 			if (null != identifier)
 				this.Identifier = identifier;
@@ -23,7 +26,7 @@ namespace WSULibs.EZID
 		}
 
 		/// <summary>
-		/// Execute the modify request
+		/// Execute the create request
 		/// </summary>
 		/// <returns>ARK identifier</returns>
 		/// <exception cref="System.Net.WebException">Thrown when there is a problem with the HTTP request</exception>
@@ -33,13 +36,14 @@ namespace WSULibs.EZID
 			if (string.IsNullOrWhiteSpace(this.Identifier))
 				throw new InvalidOperationException("Identifier cannot of empty or null");
 
-			if (this.Metadata == null)
-				throw new InvalidOperationException("Metadata must not be null");
-
 			if (this.Authentication == null)
 				throw new InvalidOperationException("Authentication must not be null");
 
-			var httpResponse = Request.ExecuteRequest(ModifyRequest.PATH + this.Identifier, RequestMethod.POST, authentication: this.Authentication, metadataDictionary: this.Metadata.AsDictionary());
+			IDictionary<string, string> metadata = null;
+			if (null != this.Metadata)
+				metadata = this.Metadata.AsDictionary();
+
+			var httpResponse = Request.ExecuteRequest(MintRequest.PATH + this.Identifier, RequestMethod.PUT, authentication: this.Authentication, metadataDictionary: metadata);
 			var response = new Response(httpResponse);
 
 			var map = response.Parse();

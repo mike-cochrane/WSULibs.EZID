@@ -12,9 +12,9 @@ namespace WSULibs.EZID
 		/// <summary>
 		/// Execute the request and get the raw HTTP response from the server
 		/// </summary>
-		/// <param name="map">Dictionary of key/value metadata pairs</param>
+		/// <param name="metadataDictionary">Dictionary of key/value metadata pairs</param>
 		/// <returns>Raw HTTP response returned from service</returns>
-		protected static HttpWebResponse ExecuteRequest(string requestPath, RequestMethod requestMethod, ApiAuthentication authentication = null, IDictionary<string, string> map = null)
+		protected static HttpWebResponse ExecuteRequest(string requestPath, RequestMethod requestMethod, ApiAuthentication authentication = null, IDictionary<string, string> metadataDictionary = null)
 		{
 			var request = HttpWebRequest.Create(String.Format("https://{0}{1}", Request.HOST, requestPath)) as HttpWebRequest;
 			request.ProtocolVersion = HttpVersion.Version11;
@@ -28,10 +28,10 @@ namespace WSULibs.EZID
 			}
 
 			// add metadata to request body if passed
-			if (map != null)
+			if (metadataDictionary != null)
 			{
 				var b = new StringBuilder();
-				foreach (var pair in map)
+				foreach (var pair in metadataDictionary)
 				{
 					// target shouldn't be encoded
 					if (Metadata.MetadataKeys.Target == pair.Key)

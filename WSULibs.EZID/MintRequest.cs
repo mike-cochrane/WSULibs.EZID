@@ -42,7 +42,7 @@ namespace WSULibs.EZID
 			if (String.IsNullOrWhiteSpace(this.Metadata.Target))
 				throw new InvalidOperationException("Metadata.Target must not be empty or null");
 
-				var httpResponse = Request.ExecuteRequest(MintRequest.PATH + this.Shoulder, RequestMethod.POST, authentication: this.Authentication, map: this.Metadata.AsDictionary());
+				var httpResponse = Request.ExecuteRequest(MintRequest.PATH + this.Shoulder, RequestMethod.POST, authentication: this.Authentication, metadataDictionary: this.Metadata.AsDictionary());
 				var response = new Response(httpResponse);
 
 			var map = response.Parse();
