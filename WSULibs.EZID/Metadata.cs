@@ -46,7 +46,7 @@ namespace WSULibs.EZID
 				if (map.ContainsKey(MetadataKeys.Owner))
 					this.Owner = map[MetadataKeys.Owner];
 
-				if (map.ContainsKey(MetadataKeys.CoOwners))
+				if (map.ContainsKey(MetadataKeys.OwnerGroup))
 					this.OwnerGroup = map[MetadataKeys.OwnerGroup];
 
 				if (map.ContainsKey(MetadataKeys.CoOwners))
